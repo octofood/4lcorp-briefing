@@ -113,7 +113,38 @@ h2:first-of-type { margin-top: 0; }
 .download-bar button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: opacity 0.2s; }
 .download-bar button:hover { opacity: 0.85; }
 .download-bar button.green-btn { background: var(--green); }
-.download-bar .copy-msg { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 6px; display: none; width: 100%; }
+
+/* Save/Load Bar */
+.save-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 16px; margin: 12px 0 4px; font-size: 13px;
+}
+.save-bar .save-label { font-weight: 600; color: var(--dark); white-space: nowrap; }
+.save-bar button {
+  padding: 7px 16px; border-radius: 6px; border: none; font-size: 12px;
+  font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: opacity 0.15s;
+}
+.save-bar button:hover { opacity: 0.8; }
+.save-bar .btn-save { background: var(--green); color: #fff; }
+.save-bar .btn-load { background: var(--blue); color: #fff; }
+.save-bar .btn-reset { background: rgba(185,28,28,0.08); color: var(--red); border: 1px solid rgba(185,28,28,0.2); }
+.save-bar input {
+  padding: 7px 12px; border-radius: 6px; border: 1.5px solid var(--border);
+  font-size: 13px; font-family: monospace; width: 200px; color: var(--dark);
+  background: var(--light-bg); outline: none; transition: border-color 0.15s;
+}
+.save-bar input:focus { border-color: var(--blue); }
+.save-bar .save-msg {
+  font-size: 12px; font-weight: 600; width: 100%; margin-top: 4px;
+  min-height: 18px; transition: opacity 0.3s;
+}
+.save-bar .save-msg.green { color: var(--green); }
+.save-bar .save-msg.red { color: var(--red); }
+@media (max-width: 768px) {
+  .save-bar { flex-direction: column; align-items: stretch; }
+  .save-bar input { width: 100%; }
+}
 
 /* Password Gate */
 #pw-gate {
@@ -214,6 +245,15 @@ h2:first-of-type { margin-top: 0; }
   <div class="progress-bar">
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="progress-label" id="progress-label">0 of 0 items complete</div>
+  </div>
+
+  <div class="save-bar">
+    <span class="save-label">Progress:</span>
+    <button class="btn-save" id="btn-save">Save</button>
+    <input type="text" id="save-code" placeholder="Paste code to load" spellcheck="false">
+    <button class="btn-load" id="btn-load">Load</button>
+    <button class="btn-reset" id="btn-reset">Reset All</button>
+    <div class="save-msg" id="save-msg"></div>
   </div>
 
   <div class="format-box">
@@ -656,14 +696,71 @@ function updateProgress() {
 }
 updateProgress();
 
-// ===== COPY LINK WITH PROGRESS =====
+// ===== SAVE / LOAD / RESET =====
+function showMsg(text, color) {
+  var el = document.getElementById('save-msg');
+  el.textContent = text;
+  el.className = 'save-msg ' + (color || '');
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.textContent = ''; }, 4000);
+}
+
+// Save: encode state as a short base64 code and copy to clipboard
+document.getElementById('btn-save').addEventListener('click', function() {
+  var h = stateToHash(state);
+  var code = h ? btoa(h) : '';
+  var codeInput = document.getElementById('save-code');
+  codeInput.value = code;
+  codeInput.select();
+  if (code) {
+    navigator.clipboard.writeText(code).then(function() {
+      showMsg('Saved! Code copied to clipboard. Send it to sync on another device.', 'green');
+    }).catch(function() {
+      showMsg('Saved! Copy the code above and share it.', 'green');
+    });
+  } else {
+    showMsg('Nothing checked yet.', 'red');
+  }
+});
+
+// Load: decode a pasted code and restore state
+document.getElementById('btn-load').addEventListener('click', function() {
+  var code = document.getElementById('save-code').value.trim();
+  if (!code) { showMsg('Paste a save code first.', 'red'); return; }
+  try {
+    var decoded = atob(code);
+    state = hashToState(decoded);
+    // Apply to DOM
+    allItems.forEach(function(li) {
+      var id = li.getAttribute('data-id');
+      if (state[id]) li.classList.add('checked');
+      else li.classList.remove('checked');
+    });
+    saveState(state);
+    updateProgress();
+    showMsg('Loaded! ' + Object.keys(state).length + ' items restored.', 'green');
+  } catch(e) {
+    showMsg('Invalid code. Check and try again.', 'red');
+  }
+});
+
+// Reset: clear all checks
+document.getElementById('btn-reset').addEventListener('click', function() {
+  if (!confirm('Reset all checkmarks? This cannot be undone.')) return;
+  state = {};
+  allItems.forEach(function(li) { li.classList.remove('checked'); });
+  saveState(state);
+  updateProgress();
+  document.getElementById('save-code').value = '';
+  showMsg('All items reset.', 'red');
+});
+
+// ===== COPY LINK (kept as secondary option) =====
 document.getElementById('copy-link-btn').addEventListener('click', function() {
   var h = stateToHash(state);
   var url = window.location.origin + window.location.pathname + (h ? '#' + h : '');
   navigator.clipboard.writeText(url).then(function() {
-    var msg = document.getElementById('copy-msg');
-    msg.style.display = 'block';
-    setTimeout(function() { msg.style.display = 'none'; }, 3000);
+    showMsg('Link copied! Share it to sync progress.', 'green');
   });
 });
 </script>
