@@ -1,4 +1,5 @@
 # Ignore everything except index.html
 *
 !index.html
+!presentation.html
 !.gitignore
