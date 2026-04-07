@@ -112,6 +112,36 @@ h2:first-of-type { margin-top: 0; }
 .download-bar { max-width: 900px; margin: 24px auto 40px; text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .download-bar button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: opacity 0.2s; }
 .download-bar button:hover { opacity: 0.85; }
+.download-bar button.green-btn { background: var(--green); }
+.download-bar .copy-msg { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 6px; display: none; width: 100%; }
+
+/* Password Gate */
+#pw-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+#pw-gate.hidden { display: none; }
+#pw-gate .pw-brand { font-size: 13px; font-weight: 700; letter-spacing: 6px; text-transform: uppercase; color: #d97706; margin-bottom: 8px; }
+#pw-gate .pw-title { font-family: var(--font-serif); font-size: 22px; color: #fff; font-weight: 600; text-align: center; }
+#pw-gate .pw-input-row { display: flex; gap: 8px; margin-top: 8px; }
+#pw-gate input {
+  padding: 12px 18px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08); color: #fff; font-size: 15px; font-family: var(--font-sans);
+  outline: none; width: 240px; transition: border-color 0.2s;
+}
+#pw-gate input::placeholder { color: rgba(255,255,255,0.35); }
+#pw-gate input:focus { border-color: #d97706; }
+#pw-gate input.shake { animation: shake 0.4s ease; border-color: #ef4444; }
+#pw-gate button {
+  padding: 12px 24px; border-radius: 8px; border: none;
+  background: #d97706; color: var(--navy); font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: var(--font-sans); transition: opacity 0.2s;
+}
+#pw-gate button:hover { opacity: 0.85; }
+#pw-gate .pw-error { color: #ef4444; font-size: 13px; height: 18px; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 
 /* Print */
 @media print {
@@ -119,6 +149,7 @@ h2:first-of-type { margin-top: 0; }
   .page { border: none; box-shadow: none; margin: 0; max-width: none; }
   .page-inner { padding: 0.4in 0.6in; }
   .download-bar { display: none; }
+  #pw-gate { display: none !important; }
   .checklist li { cursor: default; }
   .checklist li:hover { background: var(--card-bg); }
   @page { size: 8.5in 11in; margin: 0.25in; }
@@ -141,6 +172,17 @@ h2:first-of-type { margin-top: 0; }
 </style>
 </head>
 <body>
+
+<!-- Password Gate -->
+<div id="pw-gate">
+  <div class="pw-brand">4LCORP</div>
+  <div class="pw-title">Application Checklist</div>
+  <div class="pw-input-row">
+    <input type="password" id="pw-input" placeholder="Enter password" autocomplete="off">
+    <button id="pw-submit">Enter</button>
+  </div>
+  <div class="pw-error" id="pw-error"></div>
+</div>
 
 <div class="page">
 <div class="page-inner">
@@ -514,18 +556,74 @@ h2:first-of-type { margin-top: 0; }
 
 <div class="download-bar">
   <button onclick="window.print()">&#128196; Download as PDF</button>
+  <button class="green-btn" id="copy-link-btn">&#128279; Copy Link with Progress</button>
+  <div class="copy-msg" id="copy-msg">Link copied! Share it to sync progress across browsers.</div>
 </div>
 
 <script>
-// Interactive checklist with localStorage persistence
+// ===== PASSWORD GATE =====
+var PW = 'doeproposal';
+var pwGate = document.getElementById('pw-gate');
+var pwInput = document.getElementById('pw-input');
+var pwSubmit = document.getElementById('pw-submit');
+var pwError = document.getElementById('pw-error');
+
+// Check if already authenticated this session
+if (sessionStorage.getItem('4lcorp-auth') === '1') {
+  pwGate.classList.add('hidden');
+}
+
+function tryPassword() {
+  if (pwInput.value === PW) {
+    sessionStorage.setItem('4lcorp-auth', '1');
+    pwGate.classList.add('hidden');
+  } else {
+    pwError.textContent = 'Incorrect password';
+    pwInput.classList.add('shake');
+    pwInput.value = '';
+    setTimeout(function() { pwInput.classList.remove('shake'); }, 400);
+  }
+}
+pwSubmit.addEventListener('click', tryPassword);
+pwInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') tryPassword(); });
+// Auto-focus
+if (!pwGate.classList.contains('hidden')) pwInput.focus();
+
+// ===== CHECKLIST STATE (localStorage + URL hash) =====
 var allItems = document.querySelectorAll('.checklist li');
-var storageKey = '4lcorp-checklist-v1';
+var allIds = [];
+allItems.forEach(function(li) { allIds.push(li.getAttribute('data-id')); });
+
+// Encode state as compact hash: checked item indices as comma-separated numbers
+function stateToHash(st) {
+  var indices = [];
+  allIds.forEach(function(id, i) { if (st[id]) indices.push(i); });
+  return indices.length ? indices.join(',') : '';
+}
+function hashToState(hash) {
+  var st = {};
+  if (!hash) return st;
+  hash.split(',').forEach(function(s) {
+    var idx = parseInt(s);
+    if (!isNaN(idx) && idx >= 0 && idx < allIds.length) st[allIds[idx]] = true;
+  });
+  return st;
+}
 
 function loadState() {
-  try { return JSON.parse(localStorage.getItem(storageKey)) || {}; } catch(e) { return {}; }
+  // URL hash takes priority (cross-browser), then localStorage
+  var h = window.location.hash.replace('#', '');
+  if (h) return hashToState(h);
+  try { return JSON.parse(localStorage.getItem('4lcorp-checklist-v1')) || {}; } catch(e) { return {}; }
 }
-function saveState(state) {
-  try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch(e) {}
+function saveState(st) {
+  try { localStorage.setItem('4lcorp-checklist-v1', JSON.stringify(st)); } catch(e) {}
+  // Update URL hash silently
+  var h = stateToHash(st);
+  var newHash = h ? '#' + h : '';
+  if (window.location.hash !== newHash) {
+    history.replaceState(null, '', window.location.pathname + window.location.search + newHash);
+  }
 }
 
 var state = loadState();
@@ -543,6 +641,7 @@ allItems.forEach(function(li) {
     var id = this.getAttribute('data-id');
     this.classList.toggle('checked');
     state[id] = this.classList.contains('checked');
+    if (!state[id]) delete state[id];
     saveState(state);
     updateProgress();
   });
@@ -556,6 +655,17 @@ function updateProgress() {
   document.getElementById('progress-label').textContent = done + ' of ' + total + ' items complete (' + pct + '%)';
 }
 updateProgress();
+
+// ===== COPY LINK WITH PROGRESS =====
+document.getElementById('copy-link-btn').addEventListener('click', function() {
+  var h = stateToHash(state);
+  var url = window.location.origin + window.location.pathname + (h ? '#' + h : '');
+  navigator.clipboard.writeText(url).then(function() {
+    var msg = document.getElementById('copy-msg');
+    msg.style.display = 'block';
+    setTimeout(function() { msg.style.display = 'none'; }, 3000);
+  });
+});
 </script>
 
 </body>
