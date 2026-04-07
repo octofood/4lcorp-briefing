@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4LCORP — DE-FOA-0003585 Application Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f172a;
+  --dark: #111827;
+  --text: #1e293b;
+  --muted: #64748b;
+  --light-bg: #f8f6f1;
+  --parchment: #faf8f4;
+  --card-bg: #ffffff;
+  --blue: #1e40af;
+  --red: #b91c1c;
+  --green: #047857;
+  --amber: #92400e;
+  --amber-light: #d97706;
+  --teal: #0d9488;
+  --border: #d6cfc4;
+  --border-light: #e8e2d8;
+  --font-serif: 'Source Serif 4', 'Georgia', serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { font-family: var(--font-sans); color: var(--text); background: var(--parchment); line-height: 1.5; }
+
+/* Page container */
+.page { max-width: 900px; margin: 0 auto; background: #fff; border: 1px solid var(--border-light); box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+.page-inner { padding: 48px 56px 40px; }
+
+/* Header */
+.doc-header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 2px solid var(--navy); margin-bottom: 24px; }
+.doc-header .brand { font-size: 14px; font-weight: 700; letter-spacing: 4px; color: var(--navy); text-transform: uppercase; }
+.doc-header .meta { text-align: right; font-size: 11px; color: var(--muted); line-height: 1.6; }
+.doc-header .meta strong { color: var(--dark); }
+
+/* Title */
+h1 { font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.25; margin-bottom: 4px; }
+h1 .sub { display: block; font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 4px; font-family: var(--font-sans); line-height: 1.5; }
+
+/* Deadline banner */
+.deadline-banner { display: flex; align-items: center; gap: 16px; background: rgba(185,28,28,0.05); border: 1.5px solid var(--red); border-radius: 8px; padding: 14px 20px; margin: 20px 0 24px; }
+.deadline-banner .date { font-family: var(--font-serif); font-size: 28px; font-weight: 700; color: var(--red); white-space: nowrap; line-height: 1; }
+.deadline-banner .detail { font-size: 13px; color: var(--text); }
+.deadline-banner .detail strong { color: var(--red); }
+
+/* Format box */
+.format-box { background: var(--light-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; color: var(--text); line-height: 1.6; }
+.format-box strong { color: var(--dark); }
+
+/* Section headings */
+h2 { font-family: var(--font-serif); font-size: 16px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 1.5px; margin: 28px 0 12px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+h2 .section-num { display: inline-block; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-right: 8px; letter-spacing: 0; text-transform: none; vertical-align: 1px; }
+h2:first-of-type { margin-top: 0; }
+
+/* Checklist items */
+.checklist { list-style: none; margin: 0; padding: 0; }
+.checklist li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; margin-bottom: 6px; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 6px; font-size: 13px; transition: background 0.15s; cursor: pointer; }
+.checklist li:hover { background: var(--light-bg); }
+.checklist li.checked { background: rgba(4,120,87,0.04); border-color: rgba(4,120,87,0.2); }
+.checklist li.checked .check-box { background: var(--green); border-color: var(--green); color: #fff; }
+.checklist li.checked .item-title { text-decoration: line-through; color: var(--muted); }
+
+/* Checkbox */
+.check-box { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 12px; font-weight: 700; color: transparent; transition: all 0.15s; user-select: none; }
+
+/* Item content */
+.item-content { flex: 1; min-width: 0; }
+.item-title { font-weight: 600; color: var(--dark); }
+.item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+.item-gap { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.item-gap.critical { background: rgba(185,28,28,0.08); color: var(--red); }
+.item-gap.needed { background: rgba(180,83,9,0.08); color: var(--amber); }
+.item-gap.ready { background: rgba(4,120,87,0.08); color: var(--green); }
+.item-gap.info { background: rgba(30,64,175,0.08); color: var(--blue); }
+
+/* Document table */
+.doc-table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 12px; }
+.doc-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); padding: 8px 8px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.doc-table td { padding: 8px 8px; border-bottom: 1px solid var(--border-light); color: var(--text); vertical-align: top; }
+.doc-table tr:last-child td { border-bottom: none; }
+.doc-table .num { font-weight: 700; color: var(--navy); text-align: center; width: 30px; }
+.doc-table .format { font-size: 10px; font-weight: 600; color: var(--blue); white-space: nowrap; }
+.doc-table .pages { text-align: center; font-weight: 600; white-space: nowrap; }
+.doc-table .gap-cell .item-gap { margin-top: 0; }
+
+/* Quick-win box */
+.quickwin { background: rgba(4,120,87,0.04); border: 1.5px solid var(--green); border-radius: 8px; padding: 18px 20px; margin: 20px 0; }
+.quickwin h3 { font-family: var(--font-serif); font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
+.quickwin ol { padding-left: 20px; font-size: 13px; }
+.quickwin ol li { padding: 4px 0; }
+.quickwin ol li strong { color: var(--dark); }
+
+/* Progress bar */
+.progress-bar { margin: 20px 0 8px; }
+.progress-track { height: 10px; background: var(--border-light); border-radius: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--teal)); border-radius: 5px; transition: width 0.4s ease; width: 0%; }
+.progress-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 4px; }
+
+/* Footer */
+.doc-footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--muted); }
+.doc-footer .conf { font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--red); }
+
+/* Download bar */
+.download-bar { max-width: 900px; margin: 24px auto 40px; text-align: center; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.download-bar button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--navy); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-sans); transition: opacity 0.2s; }
+.download-bar button:hover { opacity: 0.85; }
+
+/* Print */
+@media print {
+  body { background: #fff; }
+  .page { border: none; box-shadow: none; margin: 0; max-width: none; }
+  .page-inner { padding: 0.4in 0.6in; }
+  .download-bar { display: none; }
+  .checklist li { cursor: default; }
+  .checklist li:hover { background: var(--card-bg); }
+  @page { size: 8.5in 11in; margin: 0.25in; }
+  h2 { page-break-after: avoid; }
+  .checklist li { page-break-inside: avoid; }
+  .doc-table tr { page-break-inside: avoid; }
+  .deadline-banner, .quickwin, .format-box { page-break-inside: avoid; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .page-inner { padding: 28px 20px; }
+  h1 { font-size: 20px; }
+  .doc-header { flex-direction: column; gap: 8px; }
+  .doc-header .meta { text-align: left; }
+  .deadline-banner { flex-direction: column; text-align: center; gap: 8px; }
+  .doc-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .checklist li { padding: 10px 10px; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+<div class="page-inner">
+
+  <div class="doc-header">
+    <div>
+      <div class="brand">4LCORP</div>
+    </div>
+    <div class="meta">
+      <strong>Application Worksheet</strong><br>
+      DE-FOA-0003585<br>
+      April 7, 2026
+    </div>
+  </div>
+
+  <h1>
+    Comprehensive Application Checklist
+    <span class="sub">DE-FOA-0003585 &middot; IIJA Section 40207 &middot; Topic Area 2: Domestic Critical Materials Recycling<br>All items from NOFO Part 1, Part 2, and March 26 webinar. Click items to mark complete.</span>
+  </h1>
+
+  <div class="deadline-banner">
+    <div class="date">Apr 24</div>
+    <div class="detail">
+      <strong>Full application due: April 24, 2026, 5:00 PM ET</strong><br>
+      Submit via <strong>infrastructure-exchange.energy.gov</strong> &middot; No extensions &middot; Submit 24 hours early
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-label" id="progress-label">0 of 0 items complete</div>
+  </div>
+
+  <div class="format-box">
+    <strong>Formatting Requirements (All Documents):</strong> PDF unless specified &middot; English &middot; 8.5&times;11&Prime; paper &middot; &ge;1&Prime; margins &middot; Calibri 12pt (10pt ok for tables/figures) &middot; Control number in header on every page &middot; Page numbers in footer &middot; &le;50 MB per file
+  </div>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <h2><span class="section-num">1</span> Pre-Submission Requirements</h2>
+  <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Do these first. Gaps here will block submission entirely.</p>
+
+  <ul class="checklist" id="section-1">
+    <li data-id="pre-1">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">eXCHANGE / Login.gov Account</div>
+        <div class="item-desc">Create or confirm account at infrastructure-exchange.energy.gov. Email must match exactly. Start application to obtain <strong>control number</strong> (required in header of every document).</div>
+        <div class="item-gap needed">Week 1</div>
+      </div>
+    </li>
+    <li data-id="pre-2">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">SAM.gov Registration (UEI Required)</div>
+        <div class="item-desc">Active Unique Entity Identifier (UEI). SAM registration complete and not expired. Must show U.S.-formed entity with majority U.S. ownership/control + physical U.S. place of business.</div>
+        <div class="item-gap needed">Week 1</div>
+      </div>
+    </li>
+    <li data-id="pre-3">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">FedConnect &amp; Grants.gov Registration</div>
+        <div class="item-desc">Register for notifications and post-award reporting. Required for award stage but start now to avoid delays.</div>
+        <div class="item-gap info">Start now</div>
+      </div>
+    </li>
+    <li data-id="pre-4">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Domestic Entity Proof</div>
+        <div class="item-desc">Articles of incorporation/formation. Ownership chart showing &gt;50% U.S. ownership/control. U.S. physical address verification. International ops (Indonesia, Africa) fine for feedstock &mdash; applicant must be domestic.</div>
+        <div class="item-gap critical">Critical</div>
+      </div>
+    </li>
+    <li data-id="pre-5">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">50% Cost Share Commitment</div>
+        <div class="item-desc">Bank letters, investor commitments, or internal capital confirmation. Must be non-federal funds. Must be documented and verifiable. This is non-negotiable.</div>
+        <div class="item-gap critical">Critical</div>
+      </div>
+    </li>
+    <li data-id="pre-6">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Download NOFO Part 1 &amp; Part 2 + All Templates</div>
+        <div class="item-desc">Download from eXCHANGE portal. Review the latest Q&amp;A document. Have consultant review for compliance requirements.</div>
+        <div class="item-gap needed">Week 1</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <h2><span class="section-num">2</span> Required Application Documents</h2>
+  <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Exact list from NOFO Part 2. Upload exactly as named and formatted. Missing or incomplete = disqualification risk.</p>
+
+  <ul class="checklist" id="section-2">
+    <li data-id="doc-1">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">1. SF-424 Application Form</div>
+        <div class="item-desc"><strong>PDF</strong> &middot; Org legal name, UEI, address, project title, funding request, duration, key contacts. Pull from SAM.gov registration.</div>
+        <div class="item-gap ready">Template available</div>
+      </div>
+    </li>
+    <li data-id="doc-2">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">2. Technical Volume</div>
+        <div class="item-desc"><strong>PDF &middot; Max 30 pages.</strong> Full project description, technical approach, innovation, feedstock plan, recovery yields/costs, supply-chain impact, market analysis, risk mitigation, job creation, environmental benefits. Core narrative: cobalt/copper/zinc/tungsten/silver recycling from e-waste.</div>
+        <div class="item-gap critical">Core deliverable</div>
+      </div>
+    </li>
+    <li data-id="doc-3">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">3. Letters of Commitment (1 page each)</div>
+        <div class="item-desc"><strong>PDF &middot; 1 page per letter.</strong> Signed letters from: <strong>Texas A&amp;M</strong> (R&amp;D scope), <strong>feedstock suppliers</strong> (Indonesia/Africa + domestic), <strong>offtake buyers</strong> (battery/defense with minimum tons/year), any subrecipients/partners. Target 3&ndash;5 strong letters.</div>
+        <div class="item-gap critical">Biggest gap &mdash; secure now</div>
+      </div>
+    </li>
+    <li data-id="doc-4">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">4. Impacted Indian Tribes Documentation</div>
+        <div class="item-desc"><strong>PDF.</strong> If project affects tribal lands/resources: consultation records. If none apply: statement that none apply.</div>
+        <div class="item-gap ready">Usually N/A statement</div>
+      </div>
+    </li>
+    <li data-id="doc-5">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">5. Statement of Project Objectives (SOPO)</div>
+        <div class="item-desc"><strong>MS Word &middot; Max 8 pages.</strong> Measurable goals, work plan, milestones, outcomes. 60 months: define (1&ndash;12), build (13&ndash;30), scale (31&ndash;60). 350&ndash;450t in 24mo, 1,500&ndash;2,500 t/yr by Year 5. Draft exists &mdash; customize with final numbers.</div>
+        <div class="item-gap needed">Draft exists &mdash; finalize</div>
+      </div>
+    </li>
+    <li data-id="doc-6">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">6. Budget Justification Workbook</div>
+        <div class="item-desc"><strong>MS Excel.</strong> Line-item budget, cost share breakdown, justification for every cost category. Must show 50/50 split. Every line ties to the SOPO.</div>
+        <div class="item-gap critical">Needs full build</div>
+      </div>
+    </li>
+    <li data-id="doc-7">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">7. Subrecipient Budget Justification</div>
+        <div class="item-desc"><strong>MS Excel.</strong> Same as above for any partners/subrecipients (e.g., Texas A&amp;M scope and costs). Only required if using subrecipients.</div>
+        <div class="item-gap needed">If using university</div>
+      </div>
+    </li>
+    <li data-id="doc-8">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">8&ndash;11. FFRDC / Foreign Work / Waiver Documents</div>
+        <div class="item-desc"><strong>PDF.</strong> Only if using FFRDC labs or any foreign work/participation. Include waiver requests if applicable.</div>
+        <div class="item-gap ready">Likely N/A</div>
+      </div>
+    </li>
+    <li data-id="doc-9">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">12. Resumes of Key Personnel</div>
+        <div class="item-desc"><strong>PDF &middot; Max 3 pages per person.</strong> PI, project manager, technical leads. Emphasize experience in metal recovery, refining, hydrometallurgy, project management.</div>
+        <div class="item-gap needed">Pull CVs now</div>
+      </div>
+    </li>
+    <li data-id="doc-10">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">13. Current &amp; Pending Support</div>
+        <div class="item-desc"><strong>PDF.</strong> For every senior/key person: all other funding sources and % effort commitment. Standard form per person.</div>
+        <div class="item-gap needed">Standard form</div>
+      </div>
+    </li>
+    <li data-id="doc-11">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">14. Transparency of Foreign Connections</div>
+        <div class="item-desc"><strong>PDF &middot; Business Sensitive.</strong> Any foreign ownership, affiliations, or funding. <strong>Disclose Indonesia and Africa operations fully.</strong> Critical for national-security review.</div>
+        <div class="item-gap critical">Disclose fully</div>
+      </div>
+    </li>
+    <li data-id="doc-12">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">15. Potentially Duplicative Funding Notice</div>
+        <div class="item-desc"><strong>PDF.</strong> Statement on any overlapping federal funding for same work. If none: simple &ldquo;none&rdquo; declaration.</div>
+        <div class="item-gap ready">Simple declaration</div>
+      </div>
+    </li>
+    <li data-id="doc-13">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">16. Environmental Questionnaire</div>
+        <div class="item-desc"><strong>PDF.</strong> U.S. facility site location, potential environmental impacts, permitting status, NEPA information. Requires specific site data.</div>
+        <div class="item-gap critical">Needs site data</div>
+      </div>
+    </li>
+    <li data-id="doc-14">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">17&ndash;18. SF-LLL &amp; Lobbying Certification</div>
+        <div class="item-desc"><strong>PDF.</strong> Lobbying disclosures (if any) + standard certification that no federal funds used for lobbying.</div>
+        <div class="item-gap ready">Short form</div>
+      </div>
+    </li>
+    <li data-id="doc-15">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">19. Summary for Public Release</div>
+        <div class="item-desc"><strong>PDF &middot; Max 1 page.</strong> Non-proprietary project summary suitable for public disclosure.</div>
+        <div class="item-gap needed">Write last</div>
+      </div>
+    </li>
+    <li data-id="doc-16">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">20. Summary Slide</div>
+        <div class="item-desc"><strong>PowerPoint.</strong> One-slide overview: title, abstract, key metrics, impact statement. For DOE internal presentations.</div>
+        <div class="item-gap needed">Write last</div>
+      </div>
+    </li>
+    <li data-id="doc-17">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">21. 40207 Application Data Sheet &amp; Workbook</div>
+        <div class="item-desc"><strong>MS Excel.</strong> Specific metrics: tons recovered per metal, critical minerals list alignment, jobs created, cost/share breakdown. Use your recovery commitment table.</div>
+        <div class="item-gap needed">Use metal table</div>
+      </div>
+    </li>
+    <li data-id="doc-18">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">22. Gantt Chart</div>
+        <div class="item-desc"><strong>PDF.</strong> Detailed 60-month timeline with milestones, deliverables, decision gates. Visual work plan matching the SOPO phases.</div>
+        <div class="item-gap needed">Build from SOPO</div>
+      </div>
+    </li>
+    <li data-id="doc-19">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">23. Financial Model</div>
+        <div class="item-desc"><strong>MS Excel.</strong> Pro forma financials, revenue projections, break-even analysis, sensitivity analysis. 5-year scaling model showing commercial viability.</div>
+        <div class="item-gap critical">Full build needed</div>
+      </div>
+    </li>
+    <li data-id="doc-20">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">24. Financing Documentation</div>
+        <div class="item-desc"><strong>PDF.</strong> Evidence of cost-share funding + any additional financing plans. Bank commitments, investor letters, internal capital proof.</div>
+        <div class="item-gap critical">Ties to cost-share</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <h2><span class="section-num">3</span> Supporting Information (Embedded in Technical Volume &amp; Evaluation)</h2>
+  <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Must be ready to provide &mdash; woven into Technical Volume or provided separately if requested.</p>
+
+  <ul class="checklist" id="section-3">
+    <li data-id="sup-1">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Feedstock Plan</div>
+        <div class="item-desc">Volumes, sources (domestic e-waste + Indonesia + Africa), contracts or LOIs, traceability chain, diversification strategy.</div>
+      </div>
+    </li>
+    <li data-id="sup-2">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Offtake Agreements</div>
+        <div class="item-desc">Buyer commitments with minimum annual tonnage. Use non-binding LOI template. Target: battery manufacturers, defense contractors, electronics firms.</div>
+      </div>
+    </li>
+    <li data-id="sup-3">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Technical Data &amp; Process Details</div>
+        <div class="item-desc">Recovery yields for each metal (silver/tungsten/copper/cobalt/zinc/lead). Process flow diagrams. Cost comparison vs. imported materials. Innovation claims.</div>
+      </div>
+    </li>
+    <li data-id="sup-4">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Job Creation &amp; Community Benefits</div>
+        <div class="item-desc">Number and types of jobs. Locations. Equity and community impact metrics. Workforce development plans.</div>
+      </div>
+    </li>
+    <li data-id="sup-5">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Intellectual Property &amp; Data Management</div>
+        <div class="item-desc">Any patents or proprietary processes. IP protection plan. Open-source commitments if applicable. Data management approach.</div>
+      </div>
+    </li>
+    <li data-id="sup-6">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Risk Assessment &amp; Mitigation</div>
+        <div class="item-desc">Supply risks, technical risks, financial risks, regulatory risks, market risks. Mitigation strategy for each. Contingency plans.</div>
+      </div>
+    </li>
+    <li data-id="sup-7">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Permitting &amp; Site Status</div>
+        <div class="item-desc">U.S. facility location confirmed. Zoning verification. Environmental permits in process or planned. Site control documentation.</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <h2><span class="section-num">4</span> Post-Submission / Award-Readiness</h2>
+  <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Start gathering now so you&rsquo;re ready if selected. Not required for submission but expected shortly after.</p>
+
+  <ul class="checklist" id="section-4">
+    <li data-id="post-1">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Full SAM/FedConnect Compliance for Award Negotiation</div>
+        <div class="item-desc">Ensure all registrations remain active through award negotiation period. Update any expiring records.</div>
+      </div>
+    </li>
+    <li data-id="post-2">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">NEPA Environmental Review Documentation</div>
+        <div class="item-desc">May require additional detail after selection. Begin site-specific environmental assessment early.</div>
+      </div>
+    </li>
+    <li data-id="post-3">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Quarterly Reporting Templates</div>
+        <div class="item-desc">Technical and financial quarterly report templates. Establish reporting cadence and internal processes.</div>
+      </div>
+    </li>
+    <li data-id="post-4">
+      <div class="check-box">&#10003;</div>
+      <div class="item-content">
+        <div class="item-title">Audit-Ready Financial Systems</div>
+        <div class="item-desc">Federal funds tracking system. Cost allocation methodology. Time and effort tracking for personnel. Single Audit Act compliance.</div>
+      </div>
+    </li>
+  </ul>
+
+  <!-- ==================== QUICK WIN ==================== -->
+  <div class="quickwin">
+    <h3>Quick-Win Action Plan &mdash; Next 7&ndash;10 Days</h3>
+    <ol>
+      <li><strong>Log into eXCHANGE</strong> &rarr; start application &rarr; get control number</li>
+      <li><strong>Download NOFO Part 1 &amp; Part 2</strong> + all templates from the portal</li>
+      <li><strong>Secure offtake &amp; feedstock letters + cost-share proof</strong> (highest risk items)</li>
+      <li><strong>Update resumes, financial model, Gantt, and SOPO</strong> with exact numbers</li>
+      <li><strong>Have consultant review full package</strong> for compliance before assembly</li>
+    </ol>
+  </div>
+
+  <div class="doc-footer">
+    <span>4LCORP &mdash; DE-FOA-0003585 Checklist &mdash; April 2026</span>
+    <span class="conf">Confidential</span>
+    <span>Source: NOFO Part 1, Part 2, March 26 Webinar</span>
+  </div>
+
+</div>
+</div>
+
+<div class="download-bar">
+  <button onclick="window.print()">&#128196; Download as PDF</button>
+</div>
+
+<script>
+// Interactive checklist with localStorage persistence
+var allItems = document.querySelectorAll('.checklist li');
+var storageKey = '4lcorp-checklist-v1';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(storageKey)) || {}; } catch(e) { return {}; }
+}
+function saveState(state) {
+  try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch(e) {}
+}
+
+var state = loadState();
+
+// Apply saved state
+allItems.forEach(function(li) {
+  var id = li.getAttribute('data-id');
+  if (state[id]) li.classList.add('checked');
+});
+
+// Click handler
+allItems.forEach(function(li) {
+  li.addEventListener('click', function(e) {
+    if (e.target.closest('a')) return;
+    var id = this.getAttribute('data-id');
+    this.classList.toggle('checked');
+    state[id] = this.classList.contains('checked');
+    saveState(state);
+    updateProgress();
+  });
+});
+
+function updateProgress() {
+  var total = allItems.length;
+  var done = document.querySelectorAll('.checklist li.checked').length;
+  var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done + ' of ' + total + ' items complete (' + pct + '%)';
+}
+updateProgress();
+</script>
+
+</body>
+</html>
